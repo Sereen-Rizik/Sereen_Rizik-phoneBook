@@ -2,6 +2,7 @@ const list = document.querySelector(".contact-list");
 
 let contacts = [
   {
+    contactID: "1",
     contactName: "Sereen Rizik ",
     contactPhone: "0542345678",
     contactEmail: "sereenrizik@gmail.com",
@@ -10,6 +11,7 @@ let contacts = [
     contactImage: "./images/sereen.jpg",
   },
   {
+    contactID: "2",
     contactName: "Jan Mike ",
     contactPhone: "0534657894",
     contactEmail: "JanMike123@gmail.com",
@@ -18,6 +20,7 @@ let contacts = [
     contactImage: "./images/Jan.jpg",
   },
   {
+    contactID: "3",
     contactName: "Steve Martin",
     contactPhone: "0552356789",
     contactEmail: "stevomartin@gmail.com",
@@ -31,21 +34,20 @@ contacts.forEach((contact) => addContactToList(contact));
 
 function addContactToList(contact) {
   const liItem = document.createElement("li");
-  liItem.className = `flex `;
-  liItem.id = contact.contactPhone;
+  liItem.className = `flex ${contact.contactID} `;
   liItem.innerHTML = `
     <div class="flex">
       <img src='${contact.contactImage}' alt="contact image" class="contact-img"/>
       <span>${contact.contactName}</span>
     </div>
     <div class="flex">
-      <button class="icon" onclick="info('${contact.contactPhone}')">
+      <button class="icon" onclick="info('${contact.contactID}')">
         <i class="fa-solid fa-info"></i>
       </button>
-      <button class="icon" onclick="editUser('${contact.contactPhone}')">
+      <button class="icon" onclick="editUser('${contact.contactID}')">
         <i class="fa-solid fa-pen-to-square"></i>
       </button>
-      <button class="icon" onclick="deleteUser('${contact.contactPhone}')">
+      <button class="icon" onclick="deleteUser('${contact.contactID}')">
         <i class="fa-solid fa-user-minus"></i>
       </button>
     </div>
@@ -54,23 +56,20 @@ function addContactToList(contact) {
 }
 
 function deleteAllContacts() {
-  contacts = [];
-  list.innerHTML = "";
+  if (confirm("Are you sure you want to delete all")) {
+    contacts = [];
+    list.innerHTML = "";
+  }
 }
 
-function deleteUser(contactNumber) {
-  contacts = contacts.filter(
-    (contact) => contact.contactPhone !== contactNumber
-  );
-  document.getElementById(`${contactNumber}`).remove();
+function deleteUser(id) {
+  contacts = contacts.filter((contact) => contact.contactID !== id);
+  document.getElementsByClassName(`${id}`)[0].remove();
 }
 
-function info(contactNumber) {
+function info(id) {
   openModal();
-
-  let contact = contacts.find(
-    (contact) => contact.contactPhone === contactNumber
-  );
+  let contact = contacts.find((contact) => contact.contactID === id);
 
   const infoHTML = `
   <h1>Contact info: ${contact.contactName}</h1>
@@ -88,11 +87,23 @@ function info(contactNumber) {
   div.innerHTML = infoHTML;
 }
 
-function editUser(contactNumber) {
+const search = document.querySelector("#search");
+const contactList = document.querySelector(".contact-list");
+
+search.addEventListener("input", (e) => {
+  const filteredList = contacts.filter((contact) => {
+    return contact.contactName
+      .toLowerCase()
+      .includes(e.target.value.toLowerCase());
+  });
+
+  contactList.innerHTML = "";
+  filteredList.forEach((contact) => addContactToList(contact));
+});
+
+function editUser(id) {
   openModal();
-  let contact = contacts.find(
-    (contact) => contact.contactPhone === contactNumber
-  );
+  let contact = contacts.find((contact) => contact.contactID === id);
 
   let editHTML = `
   <h1>Edit Contact ${contact.contactName}</h1>
@@ -129,7 +140,7 @@ function editUser(contactNumber) {
             </div>
           
             <div class="formIt">
-              <button class="input-btn" onclick="save(event,'${contactNumber}')">Save</button>
+              <button class="input-btn" onclick="save(event,'${id}')">Save</button>
             </div>
           </div>
       </form>
@@ -139,11 +150,9 @@ function editUser(contactNumber) {
   div.innerHTML = editHTML;
 }
 
-function save(e, contactNumber) {
+function save(e, id) {
   e.preventDefault();
-  const contact = contacts.filter(
-    (contact) => contact.contactPhone === contactNumber
-  )[0];
+  const contact = contacts.filter((contact) => contact.contactID === id)[0];
 
   const contactNameItem = document.getElementById("name");
   const contactNumberItem = document.getElementById("number");
@@ -159,21 +168,21 @@ function save(e, contactNumber) {
   contact.contactText = contactFreeText.value;
   contact.contactImage = contactImgItem.value;
 
-  const contactInHTML = document.getElementById(`${contactNumber}`);
-  contactInHTML.id = contact.contactPhone;
+  const contactInHTML = document.getElementsByClassName(`${id}`)[0];
+
   contactInHTML.innerHTML = `
      <div class="flex">
       <img src='${contact.contactImage}' alt="contact image" class="contact-img"/>
       <span>${contact.contactName}</span>
     </div>
     <div class="flex">
-      <button class="icon" onclick="info('${contact.contactPhone}')">
+      <button class="icon" onclick="info('${contact.contactID}')">
         <i class="fa-solid fa-info"></i>
       </button>
-      <button class="icon" onclick="editUser('${contact.contactPhone}')">
+      <button class="icon" onclick="editUser('${contact.contactID}')">
         <i class="fa-solid fa-pen-to-square"></i>
       </button>
-      <button class="icon" onclick="deleteUser('${contact.contactPhone}')">
+      <button class="icon" onclick="deleteUser('${contact.contactID}')">
         <i class="fa-solid fa-user-minus"></i>
       </button>
     </div>
@@ -253,6 +262,7 @@ function saveNewUser(e) {
     alert("Cant continue without a contact name or number");
   } else {
     const contact = {
+      contactID: `${contacts.length + 1}`,
       contactName: contactNameItem.value,
       contactPhone: contactNumberItem.value,
       contactEmail: contactEmailItem.value,
@@ -266,3 +276,4 @@ function saveNewUser(e) {
     document.getElementById("myModal").style.display = "none";
   }
 }
+
