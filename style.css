@@ -12,15 +12,19 @@ header {
   font-size: 1.5rem;
   padding: 2rem;
 }
+html,
+body {
+  height: 100%;
+}
 
 body {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
   background-image: url(./images/bg.jpg);
 }
-
+main {
+  flex-grow: 1;
+}
 footer {
   display: flex;
   justify-content: center;
@@ -163,7 +167,6 @@ footer {
   font-size: larger;
 }
 
-
 @media only screen and (max-width: 600px) {
   .contact-img {
     border-radius: 50%;
@@ -173,5 +176,6 @@ footer {
   .contact-list span {
     font-size: 20px;
   }
-  }
+}
+
   
